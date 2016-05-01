@@ -1,0 +1,59 @@
+package net.pixelors.spleef.timer;
+
+import org.bukkit.Bukkit;
+
+import net.pixelors.spleef.Core;
+import net.pixelors.spleef.events.SpleefPlayerWinEvent;
+import net.pixelors.spleef.utils.Arena;
+import net.pixelors.spleef.utils.MessageApi;
+
+public class CleanupTimer extends GameTimer {
+
+	public CleanupTimer(Arena arena) {
+		super(arena);
+	}
+
+	private String winner;
+
+	@Override
+	public void run() {
+		int ticks = getArena().getTicks();
+		if (ticks >= 0) {
+			if (ticks == 10 ) {
+				if (getArena().getPlayerList().size() == 1) {
+					if (winner == null) {
+						Bukkit.getPluginManager()
+								.callEvent(new SpleefPlayerWinEvent(getArena().getPlayerList().get(0), getArena()));
+						winner = getArena().getPlayerList().get(0).getDisplayName();
+					}
+					getArena().broadcastMessage("§8▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀");
+					getArena().broadcastMessage(" ");
+					getArena().broadcastMessage(" §l" + winner + "§f has won!");
+					getArena().broadcastMessage(" ");
+					getArena().broadcastMessage("§8▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀");
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "eco give " + winner + " 100");
+
+				} else {
+					getArena().broadcastMessage("§8▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀");
+					getArena().broadcastMessage(" ");
+					getArena().broadcastMessage(" §7Nobody has won the game!");
+					getArena().broadcastMessage(" ");
+					getArena().broadcastMessage("§8▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀ ▀");
+
+				}
+			}
+			getArena().broadcastMessage(
+					MessageApi.prefix + " Do (/spleef quit) to leave early. Time left " + MessageApi.timerTrans(ticks));
+			if (ticks == 0) {
+				Core.getOurInstance().getArenaManager().cleanUp(getArena());
+				getArena().setTicks(10);
+				getArena().playerList.clear();
+			}
+			getArena().setTicks(ticks -= 1);
+			if(ticks <= 0){
+				getArena().setTicks(20);
+			}
+
+		} 
+	}
+}
