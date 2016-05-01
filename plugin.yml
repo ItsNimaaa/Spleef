@@ -1,0 +1,9 @@
+name: Spleef
+author: ItsNimaaa
+version: 3.1.4
+main: net.pixelors.spleef.Core
+
+commands:
+  spleef:
+    usage:  /spleef <help>
+    description: Pixelors Spleef plugin main command.
